@@ -1,0 +1,76 @@
+package com.ruba.borrowbox.entity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.GeneratedValue;
+
+@Entity
+public class Item{
+
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Id
+    private int id;
+
+    private String name;
+    private String category;
+    private String description;
+    private double pricePerDay;
+    private String conditions;
+    private boolean available;
+
+    public Item() {
+    }
+
+    public Item(int id, String name, String category, String description, double pricePerDay, String conditions, boolean available)
+    {
+        this.id=id;
+        this.name=name;
+        this.category=category;
+        this.description=description;
+        this.pricePerDay=pricePerDay;
+        this.conditions=conditions;
+        this.available=available;
+    }
+    public int getId(){
+        return id;
+    }
+    public void setId(int i){
+        id=i;
+    }
+    public String getName(){
+        return name;
+    }
+    public void setName(String nm){
+         name=nm;
+    }
+    public String getCategory(){
+        return category ;
+    }
+    public void setCategory(String ctgry){
+        category=ctgry;
+    }
+    public String getDescription(String description ){
+        return description;
+    }
+    public void setDescription(String desc){
+        description=desc;
+    }
+    public double getPricePerDay(){
+    return pricePerDay;
+    }
+    public void setPricePerDay(double ppd){
+        pricePerDay=ppd;
+    }
+    public String getConditions(){
+    return conditions ;
+    }
+    public void setConditons(String cndtn){
+        conditions=cndtn;
+    }
+    public boolean isAvailable(){
+    return available;
+    }
+    public void setAvailable(boolean avlbl ){
+        available=avlbl;
+    }
+}
