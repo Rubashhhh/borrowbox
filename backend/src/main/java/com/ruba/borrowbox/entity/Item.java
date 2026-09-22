@@ -9,7 +9,7 @@ public class Item{
 
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Id
-    private int id;
+    private Integer id;
 
     private String name;
     private String category;
@@ -21,7 +21,7 @@ public class Item{
     public Item() {
     }
 
-    public Item(int id, String name, String category, String description, double pricePerDay, String conditions, boolean available)
+    public Item(Integer id, String name, String category, String description, double pricePerDay, String conditions, boolean available)
     {
         this.id=id;
         this.name=name;
@@ -31,10 +31,10 @@ public class Item{
         this.conditions=conditions;
         this.available=available;
     }
-    public int getId(){
+    public Integer getId(){
         return id;
     }
-    public void setId(int i){
+    public void setId(Integer i){
         id=i;
     }
     public String getName(){
@@ -49,7 +49,7 @@ public class Item{
     public void setCategory(String ctgry){
         category=ctgry;
     }
-    public String getDescription(String description ){
+    public String getDescription(){
         return description;
     }
     public void setDescription(String desc){
@@ -64,7 +64,7 @@ public class Item{
     public String getConditions(){
     return conditions ;
     }
-    public void setConditons(String cndtn){
+    public void setConditions(String cndtn){
         conditions=cndtn;
     }
     public boolean isAvailable(){
