@@ -26,4 +26,28 @@ public class ItemService {
     public Item addItem(Item item){
         return itemRepository.save(item);
     }
+    public Item updateItem(Integer id, Item updatedItem){
+        Item existingItem=itemRepository.findById(id)
+                .orElseThrow(()->
+                        new ItemNotFoundException ("Item wid id " + id + " not found!"));
+        existingItem.setName(updatedItem.getName());
+        existingItem.setCategory(updatedItem.getCategory());
+        existingItem.setDescription(updatedItem.getDescription());
+        existingItem.setPricePerDay(updatedItem.getPricePerDay());
+        existingItem.setConditions(updatedItem.getConditions());
+        existingItem.setAvailable(updatedItem.isAvailable());
+
+        return itemRepository.save(existingItem);
+    }
+
+    public void deleteItem(int id){
+        Item existingItem=itemRepository.findById(id)
+                .orElseThrow(()->
+                        new ItemNotFoundException ("Item with id " + id + " not found!"));
+        itemRepository.delete(existingItem);
+    }
+
+    public List<Item> getItemsByCategory(String category){
+        return itemRepository.findByCategory(category);
+    }
 }

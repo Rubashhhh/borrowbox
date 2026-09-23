@@ -3,6 +3,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 public class Item{
@@ -11,9 +13,12 @@ public class Item{
     @Id
     private Integer id;
 
+    @NotBlank
     private String name;
+    @NotBlank
     private String category;
     private String description;
+    @PositiveOrZero
     private double pricePerDay;
     private String conditions;
     private boolean available;
