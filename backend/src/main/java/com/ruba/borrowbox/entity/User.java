@@ -4,6 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.List;
+import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class User{
@@ -15,6 +19,10 @@ public class User{
     private String email;
     private String phone;
     private String location;
+
+    @JsonIgnore
+    @OneToMany(mappedBy ="owner")
+    private List<Item> item=new ArrayList<>();
 
     public User(){
     }

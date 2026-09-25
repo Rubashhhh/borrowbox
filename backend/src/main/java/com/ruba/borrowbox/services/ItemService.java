@@ -29,6 +29,9 @@ public class ItemService {
                 .orElseThrow(()->
                         new ItemNotFoundException ("Item with id " + id + " not found!"));
     }
+    public List<Item> getItemsByUser(Integer userId){
+        return itemRepository.findByOwnerId(userId);
+    }
     public Item addItem(ItemRequest request){
         User owner=userRepository.findById(request.getOwnerId())
                 .orElseThrow(()->
