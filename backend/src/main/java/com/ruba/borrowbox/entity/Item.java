@@ -1,10 +1,14 @@
 package com.ruba.borrowbox.entity;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import com.ruba.borrowbox.entity.User;
 
 @Entity
 public class Item{
@@ -22,6 +26,9 @@ public class Item{
     private double pricePerDay;
     private String conditions;
     private boolean available;
+    @ManyToOne
+    @JoinColumn(name="owner_id")
+    private User owner;
 
     public Item() {
     }
@@ -77,5 +84,12 @@ public class Item{
     }
     public void setAvailable(boolean avlbl ){
         available=avlbl;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+    public void setOwner(User owner){
+        this.owner=owner;
     }
 }

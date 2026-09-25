@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import java.util.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
+import com.ruba.borrowbox.dto.ItemRequest;
 
 @RestController
 @RequestMapping("/items")
@@ -32,8 +33,8 @@ public class ItemController{
     }
     @PostMapping
     public Item addItem(@Valid
-                            @RequestBody Item item){
-        return itemService.addItem(item);
+                            @RequestBody ItemRequest request){
+        return itemService.addItem(request);
     }
 
     @PutMapping ("/{id}")

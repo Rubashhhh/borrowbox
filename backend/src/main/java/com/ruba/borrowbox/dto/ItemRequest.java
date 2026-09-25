@@ -7,6 +7,7 @@ public class ItemRequest{
     private double pricePerDay;
     private String conditions;
     private boolean available;
+    private Integer ownerId;
 
     public ItemRequest(){
     }
@@ -47,5 +48,11 @@ public class ItemRequest{
     }
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+    public Integer getOwnerId() {
+        return ownerId;
+    }
+    public void setOwnerId(Integer ownerId) {
+        this.ownerId = ownerId;
     }
 }
