@@ -18,7 +18,8 @@ public class BorrowRequest{
 
     public BorrowRequest(){}
 
-    public String status;
+    @Enumerated(EnumType.STRING)
+    public BorrowRequestStatus status;
 
     public Integer getId() {
         return id;
@@ -44,11 +45,11 @@ public class BorrowRequest{
         this.item = item;
     }
 
-    public String getStatus() {
+    public BorrowRequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(BorrowRequestStatus status) {
         this.status = status;
     }
 }
