@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.ruba.borrowbox.dto.BorrowRequestRequest;
 import com.ruba.borrowbox.entity.BorrowRequestStatus;
 import java.util.List;
+import java.time.LocalDate;
 
 @Service
 public class BorrowRequestService{
@@ -35,13 +36,49 @@ public class BorrowRequestService{
         Item item = itemRepository.findById(request.getItemId())
                 .orElseThrow(() ->
                         new ItemNotFoundException("Item with id " + request.getItemId() + " not found"));
+        if (!item.isAvailable()) {
+            throw new RuntimeException("This item is currently unavailable");
+        }
         if (item.getOwner().getId().equals(borrower.getId())) {
             throw new RuntimeException("You cannot request your own item");
+        }
+        if (request.getStartDate() == null || request.getEndDate() == null) {
+            throw new RuntimeException("Start date and end date are required");
+        }
+        if (request.getStartDate().isBefore(LocalDate.now())) {
+            throw new RuntimeException("Start date cannot be in the past");
+        }
+        if (request.getEndDate().isBefore(request.getStartDate())) {
+            throw new RuntimeException("End date cannot be before start date");
+        }
+        List<BorrowRequest> overlappingRequests = borrowRequestRepository
+                        .findByItemIdAndStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                                request.getItemId(),
+                                BorrowRequestStatus.ACCEPTED,
+                                request.getEndDate(),
+                                request.getStartDate());
+        if (!overlappingRequests.isEmpty()) {
+            throw new RuntimeException("Item is already booked for the requested dates");
+        }
+        boolean alreadyRequested = borrowRequestRepository
+                        .existsByBorrowerIdAndItemIdAndStatusAndStartDateAndEndDate(
+                                request.getBorrowerId(),
+                                request.getItemId(),
+                                BorrowRequestStatus.PENDING,
+                                request.getStartDate(),
+                                request.getEndDate());
+
+        if (alreadyRequested) {
+            throw new RuntimeException(
+                    "You already have a pending request for this item and these dates");
         }
         BorrowRequest borrowRequest = new BorrowRequest();
         borrowRequest.setBorrower(borrower);
         borrowRequest.setItem(item);
         borrowRequest.setStatus(BorrowRequestStatus.PENDING);
+        borrowRequest.setStartDate(request.getStartDate());
+        borrowRequest.setEndDate(request.getEndDate());
+
         return borrowRequestRepository.save(borrowRequest);
     }
 
@@ -61,4 +98,25 @@ public class BorrowRequestService{
         return borrowRequestRepository.findByItemOwnerId(ownerId);
     }
 
+    public BorrowRequest acceptRequest(Integer requestId) {
+        BorrowRequest request = borrowRequestRepository.findById(requestId)
+                .orElseThrow(() ->
+                        new RuntimeException("Borrow request with id " + requestId + " not found"));
+        if (request.getStatus() != BorrowRequestStatus.PENDING) {
+            throw new RuntimeException("Only pending requests can be accepted");
+        }
+        request.setStatus(BorrowRequestStatus.ACCEPTED);
+        return borrowRequestRepository.save(request);
+    }
+
+    public BorrowRequest rejectRequest(Integer requestId) {
+        BorrowRequest request = borrowRequestRepository.findById(requestId)
+                .orElseThrow(() ->
+                        new RuntimeException("Borrow request with id " + requestId + " not found"));
+        if (request.getStatus() != BorrowRequestStatus.PENDING) {
+            throw new RuntimeException("Only pending requests can be rejected");
+        }
+        request.setStatus(BorrowRequestStatus.REJECTED);
+        return borrowRequestRepository.save(request);
+    }
 }

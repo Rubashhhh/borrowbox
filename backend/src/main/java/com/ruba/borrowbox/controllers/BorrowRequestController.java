@@ -37,4 +37,16 @@ public class BorrowRequestController {
             @PathVariable Integer ownerId) {
         return borrowRequestService.getRequestsForOwner(ownerId);
     }
+
+    @PostMapping("/{requestId}/accept")
+    public BorrowRequest acceptRequest(
+            @PathVariable Integer requestId) {
+        return borrowRequestService.acceptRequest(requestId);
+    }
+
+    @PostMapping("/{requestId}/reject")
+    public BorrowRequest rejectRequest(
+            @PathVariable Integer requestId) {
+        return borrowRequestService.rejectRequest(requestId);
+    }
 }

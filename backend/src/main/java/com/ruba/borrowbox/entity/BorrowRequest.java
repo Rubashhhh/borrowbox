@@ -1,6 +1,7 @@
 package com.ruba.borrowbox.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 public class BorrowRequest{
@@ -16,6 +17,8 @@ public class BorrowRequest{
     @JoinColumn(name="item_id")
     private Item item;
 
+    public LocalDate startDate;
+    public LocalDate endDate;
     public BorrowRequest(){}
 
     @Enumerated(EnumType.STRING)
@@ -43,6 +46,20 @@ public class BorrowRequest{
 
     public void setItem(Item item) {
         this.item = item;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     public BorrowRequestStatus getStatus() {
