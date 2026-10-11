@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
+import com.ruba.borrowbox.exceptions.BorrowRequestException;
+import org.springframework.http.ResponseEntity;
 
 // to return the error message in the form of json!
 
@@ -21,4 +23,17 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
     }
+    @ExceptionHandler(BorrowRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBorrowRequestException(
+            BorrowRequestException ex) {
+        ErrorResponse error = new ErrorResponse(
+                400,
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(error);
+    }
+
 }

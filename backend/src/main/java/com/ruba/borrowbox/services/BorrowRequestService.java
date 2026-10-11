@@ -12,6 +12,7 @@ import com.ruba.borrowbox.dto.BorrowRequestRequest;
 import com.ruba.borrowbox.entity.BorrowRequestStatus;
 import java.util.List;
 import java.time.LocalDate;
+import com.ruba.borrowbox.exceptions.BorrowRequestException;
 
 @Service
 public class BorrowRequestService{
@@ -37,19 +38,19 @@ public class BorrowRequestService{
                 .orElseThrow(() ->
                         new ItemNotFoundException("Item with id " + request.getItemId() + " not found"));
         if (!item.isAvailable()) {
-            throw new RuntimeException("This item is currently unavailable");
+            throw new BorrowRequestException("This item is currently unavailable");
         }
         if (item.getOwner().getId().equals(borrower.getId())) {
-            throw new RuntimeException("You cannot request your own item");
+            throw new BorrowRequestException("You cannot request your own item");
         }
         if (request.getStartDate() == null || request.getEndDate() == null) {
-            throw new RuntimeException("Start date and end date are required");
+            throw new BorrowRequestException("Start date and end date are required");
         }
         if (request.getStartDate().isBefore(LocalDate.now())) {
-            throw new RuntimeException("Start date cannot be in the past");
+            throw new BorrowRequestException("Start date cannot be in the past");
         }
         if (request.getEndDate().isBefore(request.getStartDate())) {
-            throw new RuntimeException("End date cannot be before start date");
+            throw new BorrowRequestException("End date cannot be before start date");
         }
         List<BorrowRequest> overlappingRequests = borrowRequestRepository
                         .findByItemIdAndStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
@@ -58,7 +59,7 @@ public class BorrowRequestService{
                                 request.getEndDate(),
                                 request.getStartDate());
         if (!overlappingRequests.isEmpty()) {
-            throw new RuntimeException("Item is already booked for the requested dates");
+            throw new BorrowRequestException("Item is already booked for the requested dates");
         }
         boolean alreadyRequested = borrowRequestRepository
                         .existsByBorrowerIdAndItemIdAndStatusAndStartDateAndEndDate(
@@ -69,7 +70,7 @@ public class BorrowRequestService{
                                 request.getEndDate());
 
         if (alreadyRequested) {
-            throw new RuntimeException(
+            throw new BorrowRequestException(
                     "You already have a pending request for this item and these dates");
         }
         BorrowRequest borrowRequest = new BorrowRequest();
@@ -103,7 +104,7 @@ public class BorrowRequestService{
                 .orElseThrow(() ->
                         new RuntimeException("Borrow request with id " + requestId + " not found"));
         if (request.getStatus() != BorrowRequestStatus.PENDING) {
-            throw new RuntimeException("Only pending requests can be accepted");
+            throw new BorrowRequestException("Only pending requests can be accepted");
         }
         request.setStatus(BorrowRequestStatus.ACCEPTED);
         return borrowRequestRepository.save(request);
@@ -114,7 +115,7 @@ public class BorrowRequestService{
                 .orElseThrow(() ->
                         new RuntimeException("Borrow request with id " + requestId + " not found"));
         if (request.getStatus() != BorrowRequestStatus.PENDING) {
-            throw new RuntimeException("Only pending requests can be rejected");
+            throw new BorrowRequestException("Only pending requests can be rejected");
         }
         request.setStatus(BorrowRequestStatus.REJECTED);
         return borrowRequestRepository.save(request);
