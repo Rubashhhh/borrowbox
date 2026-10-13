@@ -30,10 +30,10 @@ public class BorrowRequestService{
     }
 
     //to add request
-    public BorrowRequest createRequest(BorrowRequestRequest request) {
-        User borrower = userRepository.findById(request.getBorrowerId())
+    public BorrowRequest createRequest(BorrowRequestRequest request,Integer authenticatedBorrowerId) {
+        User borrower = userRepository.findById(authenticatedBorrowerId)
                 .orElseThrow(() ->
-                        new RuntimeException("User with id " + request.getBorrowerId() + " not found"));
+                        new RuntimeException("User with id " + authenticatedBorrowerId + " not found"));
         Item item = itemRepository.findById(request.getItemId())
                 .orElseThrow(() ->
                         new ItemNotFoundException("Item with id " + request.getItemId() + " not found"));
@@ -63,7 +63,7 @@ public class BorrowRequestService{
         }
         boolean alreadyRequested = borrowRequestRepository
                         .existsByBorrowerIdAndItemIdAndStatusAndStartDateAndEndDate(
-                                request.getBorrowerId(),
+                                authenticatedBorrowerId,
                                 request.getItemId(),
                                 BorrowRequestStatus.PENDING,
                                 request.getStartDate(),
@@ -99,23 +99,38 @@ public class BorrowRequestService{
         return borrowRequestRepository.findByItemOwnerId(ownerId);
     }
 
-    public BorrowRequest acceptRequest(Integer requestId) {
+    public BorrowRequest acceptRequest(Integer requestId, Integer authenticatedOwnerId) {
         BorrowRequest request = borrowRequestRepository.findById(requestId)
                 .orElseThrow(() ->
-                        new RuntimeException("Borrow request with id " + requestId + " not found"));
+                        new RuntimeException("Borrow request with id " + requestId
+                                + " not found"));
+
+        if (request.getItem().getOwner() == null || !request.getItem().getOwner().getId().equals(authenticatedOwnerId)) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Only the item owner can accept this request");
+        }
         if (request.getStatus() != BorrowRequestStatus.PENDING) {
-            throw new BorrowRequestException("Only pending requests can be accepted");
+            throw new BorrowRequestException(
+                    "Only pending requests can be accepted");
         }
         request.setStatus(BorrowRequestStatus.ACCEPTED);
         return borrowRequestRepository.save(request);
     }
 
-    public BorrowRequest rejectRequest(Integer requestId) {
+    public BorrowRequest rejectRequest(
+            Integer requestId, Integer authenticatedOwnerId) {
         BorrowRequest request = borrowRequestRepository.findById(requestId)
                 .orElseThrow(() ->
                         new RuntimeException("Borrow request with id " + requestId + " not found"));
+
+        if (request.getItem().getOwner() == null || !request.getItem().getOwner().getId().equals(authenticatedOwnerId)) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Only the item owner can reject this request");
+        }
+
         if (request.getStatus() != BorrowRequestStatus.PENDING) {
-            throw new BorrowRequestException("Only pending requests can be rejected");
+            throw new BorrowRequestException(
+                    "Only pending requests can be rejected");
         }
         request.setStatus(BorrowRequestStatus.REJECTED);
         return borrowRequestRepository.save(request);
