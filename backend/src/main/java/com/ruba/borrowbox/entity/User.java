@@ -8,18 +8,21 @@ import jakarta.persistence.OneToMany;
 import java.util.List;
 import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 
 @Entity
 public class User{
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
-
     private String name;
+    @Column(unique = true, nullable = false)
     private String email;
     private String phone;
     private String location;
+    @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
     private String role;
 
     @JsonIgnore

@@ -31,13 +31,6 @@ public class Item{
     @JoinColumn(name="owner_id")
     private User owner;
 
-    @Column(unique = true, nullable = false)
-    private String email;
-    @Column(nullable = false)
-    private String password;
-    @Column(nullable = false)
-    private String role = "USER";
-
     public Item() {
     }
 
@@ -100,24 +93,4 @@ public class Item{
         this.owner=owner;
     }
 
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-    public void setRole(String role) {
-        this.role = role;
-    }
 }
